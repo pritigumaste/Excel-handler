@@ -1,0 +1,13 @@
+.custom-table .table {
+    margin-top: 20px; /* Example of adding spacing above the table */
+  }
+  
+  .custom-table th, .custom-table td {
+    padding: 20px; /* Increase padding within cells for more space */
+  }
+  
+
+
+  
+  /* Add more styles as needed */
+  

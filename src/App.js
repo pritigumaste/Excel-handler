@@ -1,24 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
 
+import Footer from './components/footer';
+import DrawerComponent from './components/drawerComponent';
+import Hero from './components/hero';
+import Navigation from './components/navigation';
+import About from './components/about';
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
+import React, { useRef } from 'react';
+import { useDisclosure, Box } from '@chakra-ui/react';
+import { ExcelReader } from './components/ExcelReader';
 function App() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = useRef();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box>
+      <Navigation ref={btnRef} onOpen={onOpen} />
+      <Hero />
+      <About/>    
+      <DrawerComponent isOpen={isOpen} onClose={onClose} btnRef={btnRef} />
+    </Box>
   );
 }
 
