@@ -20,9 +20,11 @@ class About extends Component {
       secondRowValues: [], // New state property
       selectedColumns: {},
       filteredRows: null,
-      showPieChart: false
+      showPieChart: false,
+      showColumns: false
     };
     this.fileInput = React.createRef();
+    this.chartRef = React.createRef();
   }
 
   renderFile = (fileObj) => {
@@ -52,19 +54,83 @@ class About extends Component {
   
   handleDisplaySelectedColumns = () => {
     const { rows, selectedColumns } = this.state;
+    this.setState({
+      showColumns: true,
+      showPieChart: false, // Ensure pie chart is hidden when showing columns
+    });
     if (rows) {
       const filteredRows = rows.map(row => 
         row.filter((_, index) => selectedColumns[index])
       );
       this.setState({ filteredRows });
     }
+    
   };
   
-  togglePieChartDisplay = () => {
-    this.setState(prevState => ({
-      showPieChart: !prevState.showPieChart,
-    }));
+  preparePieChartData = () => {
+    //selecting given rows and colums of data that is selected 
+    const { rows, selectedColumns, cols } = this.state;
+    let chartLabels = [], chartData = [];
+  
+    if (rows && cols) {
+      // Assuming the first selected column for the pie chart
+      const columnIndex = Object.keys(selectedColumns).find(index => selectedColumns[index] === true);
+      console.log("Selected Column Index: ", columnIndex);
+      console.log("Selected Columns State: ", this.state.selectedColumns);
+
+      if (columnIndex !== undefined) {
+        const columnData = rows.slice(1).map(row => row[columnIndex]).filter(val => val); // Get data for the selected column, excluding the column name
+
+      //const columnData = rows.map(row => row[columnIndex]).filter(val => val); // Get data for the selected column
+      
+      // Count occurrences
+      const dataCount = columnData.reduce((acc, curr) => {
+        acc[curr] = (acc[curr] || 0) + 1;
+        return acc;
+      }, {});
+      
+      chartLabels = Object.keys(dataCount);
+      chartData = Object.values(dataCount);
+      
+      this.setState({
+        showColumns: false,
+        showPieChart: true, // Ensure pie chart is hidden when showing columns
+      });
+      // Update state with pie chart data
+      this.setState({
+       
+        pieChartData: {
+          labels: chartLabels,
+          datasets: [{
+            data: chartData,
+            backgroundColor: chartLabels.map(() => `#${Math.floor(Math.random()*16777215).toString(16)}`), // Generate random colors
+          }]
+        },
+
+        
+         // Now also manage the visibility here
+      });
+    }
+    }
+  }
+  downloadChart = () => {
+    // Ensure the chart reference exists
+    if (this.chartRef && this.chartRef.current) {
+      const canvas = this.chartRef.current.canvas;
+      const imageUrl = canvas.toDataURL('image/png');
+      
+      // Create a temporary link element
+      const downloadLink = document.createElement('a');
+      downloadLink.href = imageUrl;
+      downloadLink.download = 'pie-chart.png'; // Name of the downloaded file
+  
+      // Append the link to the document, trigger the click, and then remove it
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
   };
+  
   
   fileHandler = (event) => {
     if (event.target.files.length) {
@@ -192,7 +258,7 @@ class About extends Component {
             </label>
           ))}
           <Button mt="4" colorScheme="blue" onClick={this.handleDisplaySelectedColumns}  mr="4">Display Selected Columns</Button>
-          <Button mt="4" colorScheme="blue" onClick={this.togglePieChartDisplay}>Display Pie Chart</Button>
+          <Button mt="4" colorScheme="blue" onClick={this.preparePieChartData}>Display Pie Chart</Button>
         </Box>
       )}
      
@@ -214,11 +280,17 @@ class About extends Component {
         </Box>
       )}
 
-       {/* {this.state.showPieChart && (
-        <Box mt="4">
-          <Pie data={pieChartData} />
-        </Box>
-      )} */}
+    {this.state.showPieChart && this.state.pieChartData && (
+      <Box mt="4" display="flex" flexDirection="column" alignItems="center">
+        {/* //<Pie data={this.state.pieChartData} /> */}
+        <Pie ref={this.chartRef} data={this.state.pieChartData} />
+
+        <Button colorScheme="blue" onClick={this.downloadChart} mt="10" ml="6" mr="10">Download Chart</Button>
+       </Box>
+    )}
+  
+  
+
     <div id="excel_data" class="mt-5"></div>
     </Flex>
   );
