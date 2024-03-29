@@ -170,8 +170,19 @@ class About extends Component {
 
         {/* Render checkboxes for the second row's values */}
       {this.state.dataLoaded && this.state.secondRowValues.length > 0 && (
-        <Box mt="4" width="full" textAlign="center">
-          <Text fontSize="lg" mb="2">Choose the columns you want to display:</Text>
+        <Box mt="4" 
+          p="4"
+          mb="8"
+          bg="blackAlpha" // Light blue background
+          borderRadius="lg"
+          borderWidth="1px"
+          //borderColor="blue.200" // Light blue border
+          textAlign="center"
+          width="full" // Takes the full width of its parent
+          maxWidth="md" // Maximum width
+        
+        >
+          <Text fontSize="lg" mb="2" color= "blue.600">Choose the columns you want to display:</Text>
           {this.state.secondRowValues.map((value, index) => (
             <label key={index}>
               <input type="checkbox" value={value} 
@@ -180,7 +191,7 @@ class About extends Component {
               <br />
             </label>
           ))}
-          <Button mt="4" colorScheme="blue" onClick={this.handleDisplaySelectedColumns}>Display Selected Columns</Button>
+          <Button mt="4" colorScheme="blue" onClick={this.handleDisplaySelectedColumns}  mr="4">Display Selected Columns</Button>
           <Button mt="4" colorScheme="blue" onClick={this.togglePieChartDisplay}>Display Pie Chart</Button>
         </Box>
       )}
