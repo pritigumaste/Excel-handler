@@ -6,6 +6,27 @@
     padding: 20px; /* Increase padding within cells for more space */
   }
   
+  .ExcelTable2007 {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .ExcelTable2007 th,
+  .ExcelTable2007 td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .ExcelTable2007 th {
+    background-color: #f2f2f2;
+  }
+  
+  .ExcelTable2007 tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+  }
+  
 
 
   

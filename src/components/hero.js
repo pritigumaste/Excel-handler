@@ -10,7 +10,7 @@ import {
     useMediaQuery,
   } from '@chakra-ui/react';
   import React from 'react';
-  import excel_image from 'D:/VSCode-Workspace/my-app/src/assets/excel_image.jpeg';
+  import excel_image from 'C:/Users/Priti Gumaste/Desktop/excelSheet_workspace/my-app/src/assets/excel_image.jpg';
   
   const Hero = () => {
     const [isLargerThanLG] = useMediaQuery('(min-width: 62em)');
