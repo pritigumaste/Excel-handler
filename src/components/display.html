@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <title>Excel Data Display</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="">
 </head>
 <body>
 <div class="container" id="excel_data"></div>
 
 <script>
-  // Retrieve the data from local storage
+
   const sheetData = JSON.parse(localStorage.getItem('excelData'));
 
   if (sheetData && sheetData.length > 0) {
     let table_output = '<table class="table table-striped table-bordered"><thead><tr>';
-    // Assuming the first row is headers
+    
     sheetData[0].forEach(header => {
       table_output += `<th>${header}</th>`;
     });
     table_output += '</tr></thead><tbody>';
 
-    // Data rows
+   
     sheetData.slice(1).forEach((row, index) => {
       table_output += '<tr>';
       row.forEach(cell => {

@@ -17,7 +17,7 @@ class About extends Component {
       isFormInvalid: false,
       rows: null,
       cols: null,
-      secondRowValues: [], // New state property
+      secondRowValues: [], 
       selectedColumns: {},
       filteredRows: null,
       showPieChart: false,
@@ -37,7 +37,7 @@ class About extends Component {
           dataLoaded: true,
           cols: resp.cols,
           rows: resp.rows,
-          //extracting second row
+        
           secondRowValues: resp.rows.length > 1 ? resp.rows[0] : []
         });
       }
@@ -58,7 +58,7 @@ class About extends Component {
     const { rows, selectedColumns } = this.state;
     this.setState({
       showColumns: true,
-      showPieChart: false, // Ensure pie chart is hidden when showing columns
+      showPieChart: false, 
     });
     if (rows) {
       const filteredRows = rows.map(row => 
@@ -77,65 +77,21 @@ class About extends Component {
   //     this.preparePieChartData();
   //   }
   // }
-  // preparePieChartData = () => {
-  //   const { rows, selectedColumns } = this.state;
   
-  //   if (rows && Object.keys(selectedColumns).length) {
-  //     // Find indices of selected columns
-  //     const itemColumnIndex = Object.keys(selectedColumns).find(index => selectedColumns[index] === true);
-  //     const unitColumnIndex = itemColumnIndex !== undefined ? parseInt(itemColumnIndex) + 1 : undefined;
-  
-  //     if (itemColumnIndex !== undefined && unitColumnIndex !== undefined) {
-  //       // Create a map to sum units for each item
-  //       const dataSum = rows.slice(1) // Skip header row
-  //         .reduce((acc, row) => {
-  //           const item = row[itemColumnIndex];
-  //           const units = parseInt(row[unitColumnIndex], 10);
-  //           if (item && !isNaN(units)) {
-  //             acc[item] = (acc[item] || 0) + units;
-  //           }
-  //           return acc;
-  //         }, {});
-  
-  //       const chartLabels = Object.keys(dataSum);
-  //       const chartData = Object.values(dataSum);
-  
-  //       // Generate a random color for each item
-  //       const backgroundColors = chartLabels.map(() => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
-  
-  //       // Set the state to update the chart
-  //       this.setState({
-  //         showColumns: false,
-  //         showPieChart: true, // Ensure pie chart is hidden when showing columns
-  //       });
-  //       this.setState({
-  //         showColumns: false,
-  //         showPieChart: true,
-  //         pieChartData: {
-  //           labels: chartLabels,
-  //           datasets: [{
-  //             data: chartData,
-  //             backgroundColor: backgroundColors,
-  //           }]
-  //         }
-  //       });
-  //     }
-  //   } 
-  // }
   preparePieChartData = () => {
     const { rows, selectedColumns } = this.state;
   
-    // Find the indices of the selected columns
+    
     const selectedIndices = Object.keys(selectedColumns).filter(index => selectedColumns[index]).map(Number);
   
     if (rows && selectedIndices.length > 0) {
-      // Assume the first selected column contains the labels
+     
       const labelIndex = selectedIndices[0];
       let data = {};
       let chartLabels = [];
       let chartData = [];
       
-      // If only one column is selected, count the occurrences of each unique value
+      
       if (selectedIndices.length === 1) {
         data = rows.slice(1).reduce((acc, row) => {
           const label = row[labelIndex];
@@ -143,13 +99,13 @@ class About extends Component {
           return acc;
         }, {});
       } 
-      // If more than one column is selected, use the second selected column as the data
+     
       else {
         const dataIndex = selectedIndices[1];
         data = rows.slice(1).reduce((acc, row) => {
           const label = row[labelIndex];
           const value = parseFloat(row[dataIndex]);
-          if (!isNaN(value)) { // Only include if the value is a number
+          if (!isNaN(value)) { 
             acc[label] = (acc[label] || 0) + value;
           }
           return acc;
@@ -159,20 +115,22 @@ class About extends Component {
       chartLabels = Object.keys(data);
       chartData = Object.values(data);
   
-      // Generate a random color for each item
+      
       const backgroundColors = chartLabels.map(() => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
   
-      // Set the state to update the chart
+      
       this.setState({
         showColumns: false,
         showPieChart: true,
+         
         pieChartData: {
           labels: chartLabels,
           datasets: [{
             data: chartData,
             backgroundColor: backgroundColors,
           }]
-        }
+        },
+        filteredRows: null
       });
     } else {
       console.warn('Please select at least one column for the pie chart.');
@@ -180,17 +138,17 @@ class About extends Component {
   }
   
   downloadChart = () => {
-    // Ensure the chart reference exists
+    
     if (this.chartRef && this.chartRef.current) {
       const canvas = this.chartRef.current.canvas;
       const imageUrl = canvas.toDataURL('image/png');
       
-      // Create a temporary link element
+    
       const downloadLink = document.createElement('a');
       downloadLink.href = imageUrl;
-      downloadLink.download = 'pie-chart.png'; // Name of the downloaded file
+      downloadLink.download = 'pie-chart.png'; 
   
-      // Append the link to the document, trigger the click, and then remove it
+     
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
@@ -203,7 +161,7 @@ class About extends Component {
       let fileObj = event.target.files[0];
       let fileName = fileObj.name;
 
-      // Check for file extension and pass only if it is .xlsx and display error message otherwise
+      
       if (fileName.slice(fileName.lastIndexOf('.') + 1) === "xlsx") {
         this.setState({
           isFormInvalid: false
@@ -242,13 +200,13 @@ class About extends Component {
 <Box
           p="4"
           mb="8"
-          bg="blackAlpha.200" // Light blue background
+          bg="blackAlpha.200"
           borderRadius="lg"
           borderWidth="1px"
-          borderColor="blue.200" // Light blue border
+          borderColor="blue.200" 
           textAlign="center"
-          width="full" // Takes the full width of its parent
-          maxWidth="md" // Maximum width
+          width="full" 
+          maxWidth="md" 
         >
           <label htmlFor='file-upload'>
             <Icon as={FaUpload} boxSize={14} color="blue.600" mb="5" cursor="pointer" />
@@ -305,14 +263,13 @@ class About extends Component {
         <Box mt="4" 
           p="4"
           mb="8"
-          bg="blackAlpha" // Light blue background
+          bg="blackAlpha" 
           borderRadius="lg"
           borderWidth="1px"
           //borderColor="blue.200" // Light blue border
-          textAlign="center"
-          width="full" // Takes the full width of its parent
-          maxWidth="md" // Maximum width
-        
+          textAlign="left"
+          width="full"
+          maxWidth="md" 
         >
           <Text fontSize="lg" mb="2" color= "blue.600">Choose the columns you want to display:</Text>
           {this.state.secondRowValues.map((value, index) => (
