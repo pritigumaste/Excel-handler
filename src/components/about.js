@@ -25,6 +25,7 @@ class About extends Component {
     };
     this.fileInput = React.createRef();
     this.chartRef = React.createRef();
+    this.preparePieChartData = this.preparePieChartData.bind(this);
   }
 
   renderFile = (fileObj) => {
@@ -49,7 +50,8 @@ class About extends Component {
         ...prevState.selectedColumns,
         [index]: isChecked,
       }
-    }));
+    })
+    )
   }
   
   handleDisplaySelectedColumns = () => {
@@ -67,52 +69,116 @@ class About extends Component {
     
   };
   
-  preparePieChartData = () => {
-    //selecting given rows and colums of data that is selected 
-    const { rows, selectedColumns, cols } = this.state;
-    let chartLabels = [], chartData = [];
   
-    if (rows && cols) {
-      // Assuming the first selected column for the pie chart
-      const columnIndex = Object.keys(selectedColumns).find(index => selectedColumns[index] === true);
-      console.log("Selected Column Index: ", columnIndex);
-      console.log("Selected Columns State: ", this.state.selectedColumns);
 
-      if (columnIndex !== undefined) {
-        const columnData = rows.slice(1).map(row => row[columnIndex]).filter(val => val); // Get data for the selected column, excluding the column name
-
-      //const columnData = rows.map(row => row[columnIndex]).filter(val => val); // Get data for the selected column
+  // componentDidUpdate(prevProps, prevState) {
+  //   // Check if the selectedColumns state has changed
+  //   if (this.state.selectedColumns !== prevState.selectedColumns) {
+  //     this.preparePieChartData();
+  //   }
+  // }
+  // preparePieChartData = () => {
+  //   const { rows, selectedColumns } = this.state;
+  
+  //   if (rows && Object.keys(selectedColumns).length) {
+  //     // Find indices of selected columns
+  //     const itemColumnIndex = Object.keys(selectedColumns).find(index => selectedColumns[index] === true);
+  //     const unitColumnIndex = itemColumnIndex !== undefined ? parseInt(itemColumnIndex) + 1 : undefined;
+  
+  //     if (itemColumnIndex !== undefined && unitColumnIndex !== undefined) {
+  //       // Create a map to sum units for each item
+  //       const dataSum = rows.slice(1) // Skip header row
+  //         .reduce((acc, row) => {
+  //           const item = row[itemColumnIndex];
+  //           const units = parseInt(row[unitColumnIndex], 10);
+  //           if (item && !isNaN(units)) {
+  //             acc[item] = (acc[item] || 0) + units;
+  //           }
+  //           return acc;
+  //         }, {});
+  
+  //       const chartLabels = Object.keys(dataSum);
+  //       const chartData = Object.values(dataSum);
+  
+  //       // Generate a random color for each item
+  //       const backgroundColors = chartLabels.map(() => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
+  
+  //       // Set the state to update the chart
+  //       this.setState({
+  //         showColumns: false,
+  //         showPieChart: true, // Ensure pie chart is hidden when showing columns
+  //       });
+  //       this.setState({
+  //         showColumns: false,
+  //         showPieChart: true,
+  //         pieChartData: {
+  //           labels: chartLabels,
+  //           datasets: [{
+  //             data: chartData,
+  //             backgroundColor: backgroundColors,
+  //           }]
+  //         }
+  //       });
+  //     }
+  //   } 
+  // }
+  preparePieChartData = () => {
+    const { rows, selectedColumns } = this.state;
+  
+    // Find the indices of the selected columns
+    const selectedIndices = Object.keys(selectedColumns).filter(index => selectedColumns[index]).map(Number);
+  
+    if (rows && selectedIndices.length > 0) {
+      // Assume the first selected column contains the labels
+      const labelIndex = selectedIndices[0];
+      let data = {};
+      let chartLabels = [];
+      let chartData = [];
       
-      // Count occurrences
-      const dataCount = columnData.reduce((acc, curr) => {
-        acc[curr] = (acc[curr] || 0) + 1;
-        return acc;
-      }, {});
-      
-      chartLabels = Object.keys(dataCount);
-      chartData = Object.values(dataCount);
-      
+      // If only one column is selected, count the occurrences of each unique value
+      if (selectedIndices.length === 1) {
+        data = rows.slice(1).reduce((acc, row) => {
+          const label = row[labelIndex];
+          acc[label] = (acc[label] || 0) + 1;
+          return acc;
+        }, {});
+      } 
+      // If more than one column is selected, use the second selected column as the data
+      else {
+        const dataIndex = selectedIndices[1];
+        data = rows.slice(1).reduce((acc, row) => {
+          const label = row[labelIndex];
+          const value = parseFloat(row[dataIndex]);
+          if (!isNaN(value)) { // Only include if the value is a number
+            acc[label] = (acc[label] || 0) + value;
+          }
+          return acc;
+        }, {});
+      }
+  
+      chartLabels = Object.keys(data);
+      chartData = Object.values(data);
+  
+      // Generate a random color for each item
+      const backgroundColors = chartLabels.map(() => `#${Math.floor(Math.random() * 16777215).toString(16)}`);
+  
+      // Set the state to update the chart
       this.setState({
         showColumns: false,
-        showPieChart: true, // Ensure pie chart is hidden when showing columns
-      });
-      // Update state with pie chart data
-      this.setState({
-       
+        showPieChart: true,
         pieChartData: {
           labels: chartLabels,
           datasets: [{
             data: chartData,
-            backgroundColor: chartLabels.map(() => `#${Math.floor(Math.random()*16777215).toString(16)}`), // Generate random colors
+            backgroundColor: backgroundColors,
           }]
-        },
-
-        
-         // Now also manage the visibility here
+        }
       });
-    }
+    } else {
+      console.warn('Please select at least one column for the pie chart.');
     }
   }
+  
   downloadChart = () => {
     // Ensure the chart reference exists
     if (this.chartRef && this.chartRef.current) {
